@@ -6,7 +6,7 @@ left:
       - text: "Coding-Beaudry"
         href: ./MeganBeaudry_Coding.html
       - text: "Coding-Lott"
-        href: ./MeganLott_coding.html
+        href: ./MeganLott-coding.html
       - text: "Coding-Norfolk"
         href: ./WilliamNorfolk_Coding.html
   - text: "Analyses With Tidyverse "
