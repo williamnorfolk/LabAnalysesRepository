@@ -1,0 +1,299 @@
+---
+title: "Megan_Beaudry Coding exercise"
+output:
+  html_document:
+    df_print: paged
+    theme: cosmo
+---
+
+#*LOADING AND CHECKING DATA* <br>
+#We want to load the dslabs package <br>
+#Also now loading tidyverse and skimr packages <br>
+#Load the gapminder data set <br>
+
+```{r}
+library(dslabs)
+library(tidyverse)
+library(skimr)
+data("gapminder")
+```
+
+
+#Use the help() function to see what the data contains <br>
+```{r}
+help(gapminder)
+```
+##The dataset contains health and incomeoutcomes for 184 country from 1960 to 2016 <br>
+
+#str - displays basic strucutual info. <br>
+```{r}
+str(gapminder)
+```
+
+##The nine variables of this dataset are: country, year, infant_mortality, life_expectany, fertility, population, gdp, continent, region <br>
+
+#summary - statistical summaries of selected data. Type of data shown depends on class <br>
+```{r}
+summary(gapminder)
+```
+
+#glimpse - shows data frame info again (like str structural info) only now in a form easier to read <br>
+```{r}
+glimpse(gapminder)
+```
+
+#skim - shows summary statistics (like summary) only now with brief histograms, details on missing data for each variable, and as much other information as possible in a concise form. <br>
+
+```{r}
+skim(gapminder)
+```
+
+#class - what type of fuction is gapminder
+```{r}
+class(gapminder)
+```
+
+
+<br>
+<br>
+<br>
+#*PROCESSING DATA* <br>
+#Here the workflow diverges into a Tidyverse Exercise and a base R exercise. Tidyverse exercises are shown first <br>
+
+<br>
+<br>
+<br>
+#*Tidyverse code and plotting* <br>
+#For tidyverse package use, we start a pipeline for gapminder data with %>% ("then") <br>
+#We then filter () the data for only those data whose country is Africa <br>
+#then select() only the variables infant_mortality, life_expectancy, population, and country to remain <br>
+#plotting with country by color reveals many African countries. We also see that 226 rows are omitted from the plot due to missing values<br>
+#We see the same negative correlation between infant mortality and life expectancy here as we do below with base R code <br>
+```{r}
+gapminder %>%
+  filter(continent == "Africa") %>%
+  select(infant_mortality, life_expectancy, population, country) %>%
+  ggplot() + geom_point(aes(infant_mortality, life_expectancy, col= country))
+
+```
+
+#Repeat for plot of population versus life expectancy <br>
+#In this case, 51 omissions occur due to no population variable value <br>
+#Here, we see a similar result with slightly positive trending between these variables as we did in base R code below
+```{r}
+gapminder %>%
+  filter(continent == "Africa") %>%
+  select(infant_mortality, life_expectancy, population, country) %>%
+  ggplot() + geom_point(aes(population, life_expectancy, col= country))
+
+```
+
+#For our final Tidyverse plot using ggplot(), we will pull out only Africa AND year 2000 data for a life_expectancy as a function of infant mortality<br>
+
+#We will plot our points and use the geom_smooth() function with method() set to "lm" (linear model) to show our best fit line. <br>
+
+#The best fit line helps visualize the negative correlation we saw accross all years in African countries in just the year 2000 as well. The shadowed region around the line is the standard error range of the linear model best fit, which is boolean se = TRUE as a default for ggplot.
+
+```{r}
+gapminder %>%
+  filter(continent == "Africa", year == 2000) %>%
+  select(infant_mortality, life_expectancy, population, country) %>%
+  ggplot(aes(infant_mortality, life_expectancy)) + geom_point() +geom_smooth(method = "lm") + labs(title= "Africa in the year 2000: A best fit line for infant mortality versus life expectancy")
+
+```
+
+
+
+<br>
+<br>
+<br>
+#*Base R code with original plots from coding exercise 1*
+
+#For base R,  <- right of the chosen variable name <br>.  All african counties are accessed through the dataset gapminder by using the variable. The accessor $ is used to access specific variables (i.e., continent) within <br>
+#Again in base R, We then pull out the african counties by using a logical vector (i.e., ==) to determine if the variable content is listed as "Africa" <br>
+```{r}
+africadata <- gapminder$continent == "Africa"
+```
+
+
+
+#str - basic information on the variable defined above
+#summary - statistical summaries of selected data
+```{r}
+str(africadata)
+summary(africadata)
+```
+##the results from this code chunk indicated that we have 2907 arguments that are "true" out of a total of 10545.  You can see this is the same result as using filter and select in tidyverse. <br>
+
+#For base R, we want to define two new variables: (1) Infant_LifeExpec_Africa ~ which includes infant_mortality and life_expectency and (2) Pop_LifeExp_Africa ~ includes population and life_expectancy <br>
+
+#First, lets pull out just the infant_mortality data from africa
+#In order to do so, we call the variable infant_mortality_africa
+#Then, we need to access the infant mortality data within gapminder using the $ accessor and applying the logical vector (ie., []) africadata. This makes it so we only pull the infant mortality data from africa 
+```{r}
+infant_mortality_africa <- gapminder$infant_mortality[africadata]
+```
+#Lets apply the same logic to pull out the life expectancy data
+```{r}
+life_expectency_africa <- gapminder$life_expectancy[africadata]
+```
+#now we have to seperate variables that we want to combine to make Infant_LifeExpec_Africa
+##when want to combine two variables we use a dataframe
+#We need to define the pieces of the dataframe by using equal signs followed by the variables we created earlier. None of this is necessary with tidyverse.
+```{r}
+Infant_LifeExpec_Africa <- data.frame(infant_mortality = infant_mortality_africa, life_expectancy = life_expectency_africa)
+```
+
+#Now we need to repeat the process with a different set of variables to create Pop_LifeExp_Africa ~ includes population and life_expectancy
+```{r}
+Population_africa <- gapminder$population[africadata]
+life_expectency_africa <- gapminder$life_expectancy[africadata]
+```
+#create the dataframe
+#remember to name the dataframe using <-
+#then define parts of the dataframe using = and the dataset
+```{r}
+Pop_LifeExp_Africa <- data.frame(population = Population_africa, life_expectency = life_expectency_africa)
+```
+
+#Now lets check out these new dataframes we made using the str and summary function
+```{r}
+str(Pop_LifeExp_Africa)
+str(Infant_LifeExpec_Africa)
+summary(Pop_LifeExp_Africa)
+summary(Infant_LifeExpec_Africa)
+```
+#We know have two new variables with 2907 rows
+#the variable Pop_LifeExp_Africa contains populations and life_expectancy data
+#the variable Infant_LifeExpec_Africa contains infant mortaility and life_expectancy data
+
+
+#*PLOTTING*
+
+#plot life expectancy vs infant mortality for all african countries using the dataframe you previously made
+```{r}
+plot(Infant_LifeExpec_Africa)
+```
+#the plot indicates a negative correlation between the two variables
+##Countires with increased infant mortality show a decrease in life expectancy
+
+#Plot population vs life expectancy for all african countries 
+#we need to convert population to a log10 function first. In order to do so we should created a new variable which holds the population data in log10 form
+```{r}
+logten_pop_africa <- log10(Population_africa)
+```
+#we now need to create a new datafram with the population at log10 scale
+#list the variable you want on the x-asix first (i.e., log10 population)
+```{r}
+log10_pop_life_expec_africa <- data.frame(population = logten_pop_africa, life_expectancy = life_expectency_africa)
+```
+#now we can plot it
+```{r}
+plot(log10_pop_life_expec_africa)
+```
+#this plot shows streaks of data that appear to go together. By looking at this streaks i believe that they show the different countries in africa. They also seem to move in a positive trend.
+
+#*MORE DATA PROCESSING*
+#which years have missing infant mortality data
+#In order to determine this i am creating a variable for the NA values
+#i will used the is comand to pull the na values
+```{r}
+na_index <- is.na(infant_mortality_africa)
+```
+#now i am applying the na_index to the gapminder year data to see which ones are na
+```{r}
+gapminder$year[na_index]
+```
+#we now see a list of years where infant mortality data is missing.
+# some years are repeated. This means that multiple countries are missing those years in Africa
+
+#in order to see the total number of NA values in the variable Na_index, we can use the sum function
+```{r}
+sum(na_index)
+```
+#there are 226, which matches what was given in our exercise
+
+#Now we want to extract the data for only the year 2000 from africadata
+#remember that africadata contains 9 variables
+#first lets create an index to select for the year 2000
+```{r}
+ yr2000 <- gapminder$year == 2000
+```
+#Now we want to use the logical operator & since we want two things to be true (i.e., from africa data AND the year 2000)
+#We will call this new variable africa2000
+```{r}
+africa2000 <- yr2000 & africadata
+```
+#Now we need to apply this index to all NINE variable in the dataset to pull out the data for the year 2000 in only african countries
+```{r}
+year2000 <- gapminder$year[africa2000]
+region2000 <- gapminder$region[africa2000]
+country2000 <- gapminder$country[africa2000]
+infant_mortality2000 <- gapminder$infant_mortality[africa2000]
+life_expectency2000 <- gapminder$life_expectancy[africa2000]
+fertility2000 <- gapminder$fertility[africa2000]
+gdp2000 <- gapminder$gdp[africa2000]
+continent2000 <- gapminder$continent[africa2000]
+population2000 <- gapminder$population[africa2000]
+```
+#phew, pulled them all out
+
+#now we need to create a new dataframe using all the new variable names we created above that single out african countries in the year 2000
+```{r}
+africa2000_df <- data.frame(year = year2000, region = region2000, country = country2000, infant_mortality = infant_mortality2000, life_expectency = life_expectency2000, fertility = fertility2000, gdp = gdp2000, continent= continent2000, population = population2000)
+```
+
+#now check the data using str and summary
+```{r}
+str(africa2000_df)
+summary(africa2000_df)
+```
+#we have 51 observation and 9 variables 
+
+
+#*MORE PLOTTING*
+#Now we are going to make the two previous plots again, however only using the data from the year 2000
+#first lets plot infant mortality and life expectency in africa for the yr 2000
+```{r}
+plot(infant_mortality2000, life_expectency2000)
+```
+#we see a negative correlation
+
+#plot population size and life expectancy for the year 2000 in africa
+#first define the population to a log10 scale
+```{r}
+log10pop_yr2000 <- log10(population2000)
+```
+
+```{r}
+plot(log10pop_yr2000, life_expectency2000)
+```
+#no noticeable correlation
+
+#A SIMPLE FIT
+#Use the lm function (linear model function - used to create a simple regression model) and fit life expectancy at the outcome (y variable), and infant mortality as the predictor (x variable)
+#the summary function gives us various statistics indlucding residuals, coefficents, 
+```{r}
+lm1 <- lm(life_expectency2000 ~ infant_mortality2000)
+summary(lm1)
+```
+#linear regression model for life expectancy (y) and population size as the predictor
+# a p value of 2.826e-08 suggests that these are related as the P value is very small
+```{r}
+lm2 <- lm(life_expectency2000 ~ log10pop_yr2000)
+summary(lm2)
+```
+#P value of 0.4755. A p value this size suggests the variables are not related (i.e., population size does not affect life expectancy)
+
+#we can also visualise this fit line on the scatterplot using the abline function
+
+```{r}
+plot(infant_mortality2000, life_expectency2000)
+abline(lm1)
+```
+#this is nice because it resolidifies the conclusions i came to before
+```{r}
+plot(log10pop_yr2000, life_expectency2000)
+abline(lm2)
+```
+

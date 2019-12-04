@@ -1,0 +1,338 @@
+
+---
+title: "William Norfolk-Coding Exercise and Trang Quach Tidyverse Exercise"
+authors: "William Norfolk and Trang Quach"
+date: "8/24/2019"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+---
+
+```{r}
+#Load dslabs library and gapminder data set.
+library(dslabs)
+
+data(gapminder)
+
+#The gapminder data set is a collection of health and income outcomes for 184 countries from 1960 to 2016.
+
+```
+
+```{r}
+#Gather information on gapminder data set with R functions: help, str, summary, and class. 
+help(gapminder)
+
+#The help function displays available help pages (in the help tab) about the selected package.
+
+str(gapminder)
+
+#Str or the structure function will display the basic structural information for an object in the console. Using the str function we can see that gapminder consists of nine variables: country, infant_mortality, life_expectancy, fertility, population, gdp, continent, and region. 
+
+summary(gapminder)
+
+#The sumary function will display statistical summaries of the selected data in the console for each of the variables within the data set. The type of data shown will depend on the class (i.e. numeric, integer, character, etc.) of the individual variables within a data set. 
+
+class(gapminder)
+
+#The class function will display the type of object that is represented by a given name. For the example here, gapminder is of the data.frame class. 
+```
+
+```{r}
+#Assign only the African countries to a new object titled africadata.
+
+africadata <- gapminder$continent == "Africa"
+
+#To assign a new object use the <- to the right of the chosen object name. All African countries can be accessed in gapminder through the continent variable. The accessor $ is used to access specific variables within the data frame. To determine if a country is in Africa or not, africadata is assigned as a logical vector using == to determine if the continent variable is listed as "Africa" or other. 
+
+str(africadata)
+
+#The logical vector africadata will output information as TRUE or FALSE depending on the continent variable of each country. In this example, 10545 different data points are maeasured. Countries in Africa receive the output TRUE whereas all other continents receive a FALSE. 
+
+summary(africadata)
+
+#The summary shows results of the logical vector. Of the total 10545 measured countries, 2907 of them are located in Africa. These values can be verified by reviewing the previous summary(gapminder) output in the console and subtracting the African data points from the total measurements under the continent variable. 
+
+```
+
+
+```{r}
+#Create an object containing infant_mortality and life_expectancy for africadata.
+
+#Create and object for infant_mortality for African countries by accessing gapminder with $ and applying the logical vector africadata.
+
+infant_mortality_africa <- gapminder$infant_mortality[africadata]
+
+#Repeat the same process to create an object fot life_expectancy for African countries.
+
+life_expectancy_africa <- gapminder$life_expectancy[africadata]
+
+#Combine the two new objects into a data frame to create a single object containing both variables. 
+
+infant_vs_life_africa <- data.frame(infantmortality = infant_mortality_africa, lifeexpectancy = life_expectancy_africa)
+
+str(infant_vs_life_africa)
+
+#The result is a data frame with 2907 observations and two variables: infantmortality and lifeexpectancy.
+
+summary(infant_vs_life_africa)
+
+#Summary gives a quick glance of min, max, median, and mean for both variables. Note there are 226 NA records indicated for infantmortality.
+
+```
+
+```{r}
+#Create an object containing population and life_expectancy for africadata.
+
+#Repeat the process above for the population variable.
+
+population_africa <- gapminder$population[africadata]
+
+#Combine the population and life_expectancy data into a data frame.
+
+pop_vs_life_africa <- data.frame(population = population_africa, lifeexpectancy = life_expectancy_africa)
+
+str(pop_vs_life_africa)
+
+#The result is a data frame with 2907 observations and two variables: population and lifeexpectancy.
+
+summary(pop_vs_life_africa)
+
+#Standard statistical values are given in the summary of the object. Note 51 NA values were recorded for the population variable.
+```
+
+```{r}
+#Plot of infant mortality verses life expectancy for all African countries.
+
+plot(infant_vs_life_africa)
+
+#The plot illistrates a distinct negative correlation between the two variables. As expected, countries with increased infant mortality show decreased life expectancy.
+
+```
+
+```{r}
+#Plot of population verses life expectancy for all African countries. 
+
+#Convert previous population object into a new object at log scale.
+
+logten_pop_africa <- log10(population_africa)
+
+#Input the new log population data into a data frame with life expectancy. 
+
+logtenpop_vs_life_africa <- data.frame( log10population = logten_pop_africa, lifexcpectancy = life_expectancy_africa)
+
+plot(logtenpop_vs_life_africa)
+
+#The plot shows a distinct scattering of "streaks" of data. The individual streaks typically move in a positive trend illistrating a positve correlation between increased population size and increased life expectancy. The "streaks" seen in the data likely represent different contries within the continent of Africa measured over time. 
+```
+
+```{r}
+#Determine which years have missing data for infant mortality.
+
+#Create an index object for the NA values within the infant_mortality_africa object using the is.na function. This produces a logical vector that tells us which entries are NA. 
+
+na_index <- is.na(infant_mortality_africa)
+
+#Apply the na_index to the gapminder year data.
+
+gapminder$year[na_index]
+
+#The result is a list of years where infant mortality data is missing. Repedative years in the list represent years where infant mortality data is missing from multiple countries within the continent of Africa. 
+
+#The sum function check the total recorded Na values within the na_index to ensure it is consistent the previous summary of infant mortality.
+
+sum(na_index)
+```
+
+```{r}
+#Create a new object by extracting the data from the year 2000 from africadata. 
+#Create an index to select for the year 2000.
+
+year2000 <- gapminder$year == "2000"
+
+#Combine the new index with africadata to select for Africa and the year 2000 combined.
+
+africa2000 <- africadata & year2000
+
+#Apply this index to all variables in the gapminder data set. 
+
+year2000 <- gapminder$year[africa2000] 
+region2000 <- gapminder$region[africa2000]
+country2000 <- gapminder$country[africa2000]
+infantmort2000 <- gapminder$infant_mortality[africa2000]
+lifeexpect2000 <- gapminder$life_expectancy[africa2000]
+fertility2000 <- gapminder$fertility[africa2000]
+gdp2000 <- gapminder$gdp[africa2000]
+continent2000 <- gapminder$continent[africa2000]
+population2000 <- gapminder$population[africa2000]
+
+#Create a data frame using the new object names to select for African countries and the year 2000. 
+
+africa2000df <- data.frame(year = year2000, country = country2000, population = population2000, region = region2000, infant_mortality = infantmort2000, life_expectancy = lifeexpect2000, fertility = fertility2000, gdp = gdp2000, continent = continent2000)
+
+str(africa2000df)
+
+#The resulting data frame has 51 observations and 9 vairables. 
+
+summary(africa2000df)
+
+#Specific statistical values are given for each of the 9 variables within the object.
+
+```
+```{r}
+#Recreate the plot for infant mortality verses life expectancy.
+
+plot(infantmort2000, lifeexpect2000)
+
+#The resulting figure shows a negative correlation between infant mortality and life expectancy. 
+```
+```{r}
+#Recreate the plot for population verses life expectancy. 
+
+#Redefine the population data for Africa in 2000 to a log 10 scale. 
+
+logtenpop2000 <- log10(population2000)
+
+#Plot log 10 population verses life expectancy.
+
+plot(logtenpop2000, lifeexpect2000)
+
+#The resulting figure shows no distinct correlation between population and life expectancy. 
+
+```
+```{r}
+#Create a linear regression model for life expectancy as the outcome (y variable), and infant mortality as the predictor (x variable).Ensure the y variable is the first variable entered to the lm() function.
+
+fit1 <- lm(lifeexpect2000 ~ infantmort2000)
+ 
+summary(fit1)
+
+#Summary prints the fit results to the console and provides a number of  important statistical data points, in particular the p-value. The p-value from this example is 2.826e-08. The very low p-value suggests that infant mortality is strongly related to life expectancy. 
+ 
+```
+```{r}
+#Create a linear regression model for life expectancy as the outcome (y variable), and population size as the predictor (x variable).
+
+fit2 <- lm(lifeexpect2000 ~ logtenpop2000)
+
+summary(fit2)
+
+#The p-value from this example is 0.4755. The high p-value suggests that poplation size is not related to life expectancy.
+
+```
+```{r}
+#Fit line to scatterplot for life expectancy verses infant mortality.
+
+#Replot the scatterplot.
+
+plot(infantmort2000, lifeexpect2000)
+
+#Use the abline function to fit a line to the plot according to the new linear model object. 
+
+abline(fit1)
+
+#Here we see a strong negative correlation with the fit line which is consistent with the p-value.
+
+```
+```{r}
+#Fit line to scatterplot for life expectancy verses population size.
+
+plot(logtenpop2000, lifeexpect2000)
+abline(fit2)
+
+#Here we see no distinct correlation with the fit line which is consistent with the p-value. 
+
+```
+
+
+# Module 6 Assessment: Using packages to do the Rcoding exsercise. This code is written by Trang Quach
+
+```{r}
+
+
+library(tidyverse)
+library(skimr)
+
+glimpse(gapminder)
+skim(gapminder)
+
+## select African countries from gapminder
+Africa_ <- gapminder %>% 
+  filter(continent=="Africa") %>%
+  select("infant_mortality","life_expectancy","population" ,"country")
+  
+  
+Africa_ %>%
+  ggplot() +
+  geom_point(aes(infant_mortality, life_expectancy, color = country))
+
+Africa_ %>%
+  ggplot() + 
+  geom_point(aes(population, life_expectancy, color = country))
+
+Africa_ %>%
+  ggplot() + 
+  geom_point(aes(log(population), life_expectancy, color = country))
+
+
+## select Africa countries and year 2000
+Africa2000_ <- gapminder %>%
+  filter(continent=="Africa", year==2000)
+
+## Fit plot with regression line
+Africa2000_ %>%
+  ggplot(aes(infant_mortality, life_expectancy)) +
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(x = "infant mortality", y = "life expectancy", 
+       title = "Correlation of infant mortality and life expectancy in Africa in 2000")
+
+
+
+```
+
+## Module 6 Assessment: Using packages to do the Rcoding exsercise. This code is written by Trang Quach
+
+```{r}
+
+
+library(tidyverse)
+library(skimr)
+
+glimpse(gapminder)
+skim(gapminder)
+
+## select African countries from gapminder
+Africa_ <- gapminder %>% 
+  filter(continent=="Africa") %>%
+  select("infant_mortality","life_expectancy","population" ,"country")
+  
+  
+Africa_ %>%
+  ggplot() +
+  geom_point(aes(infant_mortality, life_expectancy, color = country))
+
+Africa_ %>%
+  ggplot() + 
+  geom_point(aes(population, life_expectancy, color = country))
+
+Africa_ %>%
+  ggplot() + 
+  geom_point(aes(log(population), life_expectancy, color = country))
+
+
+## select Africa countries and year 2000
+Africa2000_ <- gapminder %>%
+  filter(continent=="Africa", year==2000)
+
+## Fit plot with regression line
+Africa2000_ %>%
+  ggplot(aes(infant_mortality, life_expectancy)) +
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(x = "infant mortality", y = "life expectancy", 
+       title = "Correlation of infant mortality and life expectancy in Africa in 2000")
+
+
+```
+

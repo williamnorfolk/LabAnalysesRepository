@@ -1,0 +1,261 @@
+---
+title: "Tidy Tuesday 1"
+author: "Megan Lott"
+date: "October 3, 2019"
+output:
+ rmdformats::readthedown:
+    highlight: kate
+---
+
+```{r load libraries}
+
+library(tidyverse)
+library(jsonlite)
+library(janitor)
+library(here)
+library(sf) #Linking to GEOS 3.6.1, GDAL 2.2.3, PROJ 4.9.3
+library(mapproj)
+library(ggfortify)
+library(ggmap)
+library(dplyr)
+library(viridis) #color palette
+library(plotly)
+library(rmdformats)
+library(knitr)
+```
+
+#Motivation
+
+For this Tidy Tuesday, I would like to learn how to plot the Pizza Rating data to a map. I have been in need of building a map to display my water quality data in Florida. I will focus here on visualizing the Pizza Ratings in to help as a jumping off point for future map-making. 
+
+#References 
+This week's data is from [Jared Lander](https://twitter.com/jaredlander/status/1178122846419193858?s=20) and [Barstool Sports](https://twitter.com/jaredlander/status/1178122846419193858?s=20) via Tyler Richards.
+
+
+
+#Data 
+```{r load data}
+
+pizza_jared <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-10-01/pizza_jared.csv")
+pizza_barstool <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-10-01/pizza_barstool.csv")
+pizza_datafiniti <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-10-01/pizza_datafiniti.csv")
+pizza_raw <- read_csv("https://raw.githubusercontent.com/tylerjrichards/Barstool_Pizza/master/pizza_data.csv")
+
+```
+
+The cleaning script here has some bugs, so I skipped it, and used my own.
+
+```{r data cleaning}
+
+#we are cleaning this data to make it suiatble for us in ggplot and other mapping functions
+#we want the lat/long column names to match the format used in ggplot
+names(pizza_barstool)[6]<-"lat" 
+names(pizza_barstool)[7]<-"long" 
+
+#somewhere in this script, we need to filter out the pizza shops without long/lat data (there are 2)
+#we may want to use a unique() function to filter out multiples of the same pizza shop - do this by address, perhaps, and not by name, in case there are shops with the same name 
+
+pizza_cleaned = pizza_barstool %>%
+  filter(!is.na(long)) 
+```
+
+#Exploratoring the Data
+##Chains
+Question: Are there shops here with the same name?
+
+```{r}
+
+
+distinct(pizza_barstool, name)
+
+#yes, there are 11 stops that have duplicated names. Which shops are these?
+
+
+pizza_chains = pizza_barstool %>% 
+  group_by(name) %>% 
+  filter(n()>1) %>% 
+  summarize(n())
+
+
+```
+
+
+There are 452 pizza shows with unique names. This means there are 11 shops that have duplicated a name from another shop. What names have been re-used? Are these duplicates or chains?
+
+##Locations
+
+Now, let's look and see where these pizza shops are located. 
+
+```{r}
+
+#Write some code here that plots the data by the number of pizza shops per city.
+pizza_shops_city = pizza_barstool %>% 
+  group_by(city) %>%
+  summarize(num_per_city = n()) %>%
+  arrange(desc(num_per_city))
+
+pizza_shops_city
+
+```
+
+Top Ten Density: The cities with the most number of pizza shops included in this study were: New York, Brooklyn, Boston, Las Vegas, Minneapolis, Atlanta, Chicago, Columbus, Hoboken, and Nantucket. 
+
+
+##John's on 44th
+
+As a NY Native, Joe says that John's on 44th has the best pizza. Looking through the shops in NYC, he must be referring to John's of Times Square. How does this compare to the average pizza ratings in NYC? 
+
+
+```{r}
+pizza_barstool %>% 
+  filter(city == "New York") %>%
+  arrange(name)
+
+johns_44 = pizza_barstool %>% 
+  filter(name == "John's of Times Square") %>%
+  summarize(score = mean(review_stats_all_average_score))
+
+all_nyc = pizza_barstool %>%
+  filter(city == "New York") %>%
+  summarize(score = mean(review_stats_all_average_score))
+
+johns_compared = full_join(johns_44, all_nyc)
+
+row.names(johns_compared)[1]<-"John's of Times Square" 
+row.names(johns_compared)[2]<-"NYC Average"
+#Hmmm...would this code work if we were joining more complx data?
+
+#would like to add a visual. Would it help if we compares John's to the best of NYC? And the worst? What about the median? Or a t-test?
+
+```
+
+
+#Visualizing Data using Maps
+##Bubble Maps
+As input you need:
+
+1. a list of GPS coordinates (longitude and latitude of the places you want to represent) CHECK! We will use the long and lat data in the pizza_cooked df. 
+2. a numeric variable used for bubble color and size CHECK! We will use the review_stats_all_average_score value from the pizza_cooked df. 
+
+We're going to make a basic Bubble Map here to show where the pizza data has been collected.
+
+```{r bubble map with pizza data}
+
+#add geom_polygon for the shape of the US, and add your scatterplot on it with geom_point() to map the locations of the pizza shops rated in this data.
+
+map_us = map_data("usa")
+head(map_us)
+names(map_us)
+class(map_us)
+
+
+ggplot() +
+  geom_polygon(data = map_us, aes(x=long, y = lat, group = group), fill="grey", alpha=0.3) +
+  geom_point(data=pizza_barstool, aes(x=long, y=lat)) +
+  theme_void() + coord_map() 
+
+
+
+#now, let's add in some information about the pizza data using color. 
+#Ideally, we want to visualize the best pizza places. Let's fill in the figure by pizza rating per shop.
+ggplot() +
+  geom_polygon(data = map_us, aes(x=long, y = lat, group = group), fill="grey", alpha=0.3) +
+  geom_point(data=pizza_cleaned, aes(x=long, y=lat, color = review_stats_all_average_score)) +
+  theme_void() + coord_map() 
+
+#we can make this an interactive map using ggplotly
+p = ggplot() +
+  geom_polygon(data = map_us, aes(x=long, y = lat, group = group), fill="grey", alpha=0.3) +
+  geom_point(data=pizza_cleaned, aes(x=long, y=lat, color = review_stats_all_average_score)) +
+  theme_void() + coord_map() 
+
+ggplotly(p)
+
+
+```
+
+
+We examined the pizza ratings for the US. Now, can we zoom in on a location? Let's Choose NYC, the city with the most amount of pizza shops included in the study. 
+
+NY:
+Florida is 25-31 and 88-80
+IRL: 27-29 and 80-81
+
+```{r zoom into the state of New York}
+ny = map_data("state", region = "new york")
+
+ny_pizza = pizza_barstool %>% filter(city == "New York", long != "NA") 
+
+ny_pizza_plot = ggplot() +
+  geom_polygon(data = ny, aes(x=long, y = lat, group = group), fill="grey", alpha=0.3) +
+  geom_point(data=ny_pizza, aes(x=long, y=lat, color = review_stats_all_average_score)) +
+  theme_void() + coord_map() 
+
+ggplotly(ny_pizza_plot)
+
+```
+
+
+
+##Chloropleth Maps
+
+
+Building a chloropleth Map 
+
+A choropleth map uses the color of each region in the plot to display some value associated with the region. 
+
+
+The maps package is a great source of geospatial data that is readily availible in R. ggplot2 provides the function map_data() which fetches maps from the maps package and returns them in a format that ggplot2 can plot.
+
+To make this map, we need to define region boundaries, which are typically stored in geospatial objects. These can be accessed as shapefiles, geojson files or provided in a R package. 
+
+Below, we practice making the map of Floria from the R map data.A short list of the datasets saved in maps includes: france, italy, nz, usa, world, and world2, along with county and state.
+
+
+```{r}
+
+fl = map_data("state", region = "florida")
+ggplot(fl) +
+  geom_polygon(mapping = aes(x = long, y = lat)) + 
+  coord_map() 
+
+
+
+#let's take a look at the usa map data in R
+map_us = map_data("usa")
+head(map_us)
+names(map_us)
+class(map_us)
+
+#the map data includes long and lat data for the main (continental US)
+#using the map_data function saves the map data as a data frame
+
+ggplot(map_us, aes(x = long, y = lat, group = group)) +
+  geom_polygon() + coord_map()
+
+#using the ggfortify package, the map() function saves the data as a map
+
+map_us = map("usa", plot = FALSE)
+names(map_us)
+
+#we can use the autoplot function in ggfortify to control the aesthetics 
+map_us = autoplot(map_us)
+class(map_us)
+
+```
+
+From RStudio Primer:
+
+Building a chloropleth map will require some data wrangling. We want to ensure that a commo set of region names appears across both data sets.
+
+Add geom_map(). Set the map_id aesthetic to the variable that contains the regions names. Then set the fill aesthetic to the fill variable. You do not need to supply x and y aesthetics, geom_map() will derive these values from the map data set, which you must set with the map parameter. Since map is a parameter, it should go outside the aes() function.
+
+Follow geom_map() with expand_limits(), and tell expand_limits() what the x and y variables in the map dataset are. This shouldn’t be necessary in future iterations of geom_map(), but for now ggplot2 will use the x and y arguments of expand_limits() to build the bounding box for your plot.
+
+Avoid distortions by adding coord_map() to your plot. coord_map() displays the plot in a fixed cartographic projection.You must first load mapproj package.
+
+
+#Additional Notes
+
+- For this TidyTuesday exercise, I tried to use Snazzy Maps, but this application requires a paid account.
+- Maps from Google require an API Key. These seem to require a paid membership. Are there alternatives availible?

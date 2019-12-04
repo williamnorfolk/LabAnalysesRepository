@@ -1,0 +1,144 @@
+---
+title: "10-2-19 Tidy verse"
+author: "Megan Beaudry"
+date: "10/1/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+library loading
+```{r}
+library(tidyverse)
+library(reshape2)
+```
+
+loading data
+```{r}
+pizza_jared <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-10-01/pizza_jared.csv")
+pizza_barstool <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-10-01/pizza_barstool.csv")
+pizza_datafiniti <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-10-01/pizza_datafiniti.csv")
+```
+
+DATA PREVIEWING
+
+lets view the data
+
+First I Want to see which cities have a lot of reviews
+```{r}
+count(pizza_barstool, city)
+```
+This gives us ten pages of data. Some cities only one have one review, so lets eliminate those.
+
+```{r}
+pizza_jared %>%
+  count(place, sort = TRUE)
+```
+looks like we have 56 pizza places
+
+```{r}
+pizza_jared %>%
+  count(answer)
+```
+the different kind of answer we could get 
+
+
+CLEANING
+From our earlier view we found that these cities have more than two:Ann Arbor, Atlanta, Boston, Bronx, Brooklyn, Chicago, Columbus, Indianapolis, Las Vegas, Lexington, Lousiville, Minneapolis, Morgantwon, Nantucket, New Haven, New York, Saratoga Springs, Staten Island, Youngstown
+```{r}
+by_city <- pizza_barstool %>%
+  filter(city %in% c("Ann Arbor", "Atlanta", "Boston", "Bronx", "Brooklyn", "Chicago", "Columbus", "Indianapolis", "Las Vegas", "Lexington", "Lousiville", "Minneapolis", "Morgantown", "Nantucket", "New Haven", "New York", "Saratoga Springs", "Staten Island", "Youngstown")) %>%
+  group_by(city, price_level, review_stats_community_average_score)
+```
+
+```{r}
+By_city_2 <- pizza_barstool %>%
+  filter(city %in% c("Ann Arbor", "Atlanta", "Boston", "Bronx", "Brooklyn", "Chicago", "Columbus", "Indianapolis", "Las Vegas", "Lexington", "Lousiville", "Minneapolis", "Morgantown", "Nantucket", "New Haven", "New York", "Saratoga Springs", "Staten Island", "Youngstown")) %>%
+  select(city, review_stats_community_average_score, review_stats_critic_average_score)
+```
+
+
+
+After glancing at the data,and reviewing what others did on twitter, this what I have decided:
+1. I want to mutate the date and time - use the function as.POSIXct to mutate the date and time to represent calendar dates and times (Note - this may come in handy for tidying my dataset for the project)
+2. I want to group by place so question and answer are then associated with place
+3. Summarize the votes
+4. Then get the total summary of votes
+5. ungroup so I can have the percent of votes 
+```{r}
+by_place <- pizza_jared %>%
+  mutate(time = as.POSIXct(time, origin = "1970-01-01"), date = as.Date(time), anwser = fct_relevel(answer)) %>%
+  group_by(place, question, answer) %>%
+  summarize(votes = sum (votes)) %>%
+  mutate(total = sum(votes)) %>%
+  ungroup() %>%
+  mutate(percent = votes / total,
+         answer_interger = as.integer(answer),
+         average = sum(answer_interger * percent))
+```
+
+
+
+FIGURES
+
+Which city has the best pizza bsed on the community average score for the price level?
+```{r}
+by_city %>%
+   ggplot(aes(city, review_stats_community_average_score)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90, hjust = .5)) +
+  facet_wrap(~ price_level) + 
+  labs (x = "Average Rating from Community",
+        y = "City",
+        title = "Tidy Tuesday: Pizza ratings from the Community Broken Down by City and Price")
+```
+
+
+Lets make a another bar graph 
+This graph tells us, when over 50% of votes are for a rating of the pizza quality by pizza place. The puprose of this graph is to help someone narrow down what place they may want to go
+```{r}
+by_place %>%
+  filter (percent >= 0.50) %>%
+  ggplot(aes(place, percent)) +
+  geom_col() + 
+  theme(axis.text.x = element_text(angle = 90, hjust = .5)) +
+  scale_y_continuous(labels = scales::percent) +
+  facet_wrap(~ answer) + 
+  labs (x = "Ranking",
+        y = "Pizza PLace",
+        title = "Pizza Place Rankings with over 50% of Voters")
+```
+
+Want a minimum number of votes to be included across the "meet up"...lets do 20
+```{r}
+answer_orders <- c("Never Again", "Poor", "Average", "Good", "Excellent")
+
+by_place %>%
+  filter(total >= 20) %>%
+  ggplot(aes(answer, percent)) +
+  geom_col() +
+  facet_wrap(~ place) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  scale_y_continuous(labels = scales::percent) + 
+  labs (x = "Ranking",
+        y = "% of respondents",
+        title = "Tidy Tuesday: Most Popular Pizza Places with 20 respondents")
+```
+
+
+
+
+```{r}
+pizza_barstool %>%
+  filter(provider_review_count >= 300) %>%
+  ggplot(aes(city)) +
+  geom_bar() + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs (x = "City",
+        y = "Number of Reviews",
+        title = "Cities with more than 300 reviews")
+  
+```
+

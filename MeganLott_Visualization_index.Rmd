@@ -1,0 +1,143 @@
+---
+title: "Megan Lott Visualization Exercise"
+author: "Megan Lott"
+date: "September 24, 2019"
+output: html_document
+---
+
+The original figure is from Five Thirty Eight's article ["Are White Evangelicals Sacrificing The Future In Search Of The Past?"](https://fivethirtyeight.com/features/are-white-evangelicals-sacrificing-the-future-in-search-of-the-past/) posted January 24, 2018.
+
+
+The original data was retrieved from the Public Religion Research Institute (PRRI) and included in the organizations' report ["America's Changing Religious Identity"](https://www.prri.org/research/american-religious-landscape-christian-religiously-unaffiliated/) from September 6, 2017. PRRI provided a figure of their own this this data. The data is availible for download as a .csv file.
+
+
+```{r Install Packages}
+
+library(plotly)
+library(knitr)
+library(tidyverse)
+library(ggplot2)
+library(ggthemes)
+library(RColorBrewer)
+library(DT)
+
+
+```
+
+
+```{r Data Wrangling and Tidying}
+
+#rename data set
+religion_data = read_csv("./Raw Data/a-generational-shift-in.csv")
+kable(religion_data)
+
+#rename age column 
+
+names(religion_data)[1]<-"age_group" 
+
+#the original data set is not tidy. The variables are: religion and age. There are counts or percentages for each group. 
+religion_data_tidy = religion_data %>% gather(key = "religion", value = "percent", -`age_group`)
+datatable(religion_data_tidy, options = list(pageLength = 5))
+
+```
+
+
+The figure from Five Thirty Eight is a bar plot that shares the religious identitity of respondants as a percentage of total respondants questions (proportions). The responses are binned by age group and colored by religious identity. 
+
+
+```{r Evolution of the Figure}
+
+religion_data_tidy %>%
+ggplot(aes(fill= religion, y= percent, x=age_group)) + 
+    geom_bar(position="fill", stat="identity")
+
+  
+religion_data_tidy %>%
+ggplot(aes(fill= factor(religion, levels=unique(religion)), y= percent, x=age_group)) + 
+    geom_bar(position="fill", stat="identity", width = 0.25) +
+    xlab("Age") +
+    ggtitle("A generational shift in religious identity", subtitle = "Share of respondants by age group and religious affiliation") +
+    scale_x_discrete(position = "top")
+
+religion_data_tidy %>%
+ggplot(aes(fill= factor(religion, levels=unique(religion)), y= percent, x=age_group)) + 
+    geom_bar(position="fill", stat="identity", width = 0.25) +
+    xlab("Age") +
+    ggtitle("A generational shift in religious identity", subtitle = "Share of respondants by age group and religious affiliation") +
+    scale_x_discrete(position = "top")+ 
+    theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(),  
+    panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + 
+    guides(fill=guide_legend(title=NULL))
+
+religion_data_tidy %>%
+ggplot(aes(fill= factor(religion, levels=unique(religion)), y= percent, x=age_group)) + 
+    geom_bar(position="fill", stat="identity", width = 0.25) +
+    xlab("Age") +
+    ggtitle("A generational shift in religious identity", subtitle = "Share of respondants by age group and religious affiliation") +
+    scale_x_discrete(position = "top")+ 
+    theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(),  
+    panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + 
+    guides(fill=guide_legend(title=NULL)) + 
+  scale_fill_manual(values=c("snow3","darkolivegreen4", "darkolivegreen3","darkolivegreen1", "darkolivegreen2", "plum3", "plum2", "plum4", "plum1","coral3","khaki1", "chocolate2", "chocolate3")) 
+  
+  
+  
+  
+  
+  
+  
+
+
+```
+
+
+```{r Data Visualization}
+
+#To build this figure, we need to build upon base ggplot() and add the geom_bar() function. 
+
+#We need to figure out how to order the "fills" by religion. The order in the original figure seems to have been alphabetized by ggplot automatically. How do we undo this? - Set religion as a factor. 
+
+#COMPLETED
+#Load data
+#Generate plot 
+#Reorder the fills
+#Add chart labels
+#Create a minimal theme by removing all y labels and axes 
+#Moved X axis to top of chart 
+
+
+#TO-DO
+#Find a way to change legend into labels 
+#Find a way to add data labels inside of the stacks
+#Move the "Don't Know/Refused" to the bottom
+
+
+religion_data_tidy %>%
+ggplot(aes(fill= factor(religion, levels=unique(religion)), y= percent, x=age_group)) + 
+    geom_bar(position="fill", stat="identity", width = 0.25) +
+    xlab("Age") +
+    ggtitle("A generational shift in religious identity", subtitle = "Share of respondants by age group and religious affiliation") +
+    scale_x_discrete(position = "top")+ 
+    theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(),  
+    panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + 
+    guides(fill=guide_legend(title=NULL)) + 
+  scale_fill_manual(values=c("snow3","darkolivegreen4", "darkolivegreen3","darkolivegreen1", "darkolivegreen2", "plum3", "plum2", "plum4", "plum1","coral3","khaki1", "chocolate2", "chocolate3")) 
+  
+```
+
+
+
+Tried and Failed 
+
+1. Adding border around "White evangelical Protestant" - I attempted to add a border by adding an ifelse statement in the geom_bar() function. This included geom_bar(position="fill", stat="identity", width = 0.25, color = ifelse(religion == "White evangelical Protestant"), "black", FALSE). This did not work. The religion variable was not identified. The FALSE argument is not possible here, according to the errors (though I have seen color = FALSE used elsewhere)
+
+2. Chaning the Color Pallete - I had a hard time finding this figure's color pallete or a form of gradient that would work. I went through and hand-picked the colors. 
+
+3. Changing Legend - I tried to line up the Legend with the sections of the 65+ bar, as seen in the original figure. I tried this by different variations of geom_text(). One configuration was: geom_text(x == "65+",label~religion). Did not work here.
+
+4. Adding data labels - There are a few complications with this. The number labels are both black and white. 
+
+
+
+
+
