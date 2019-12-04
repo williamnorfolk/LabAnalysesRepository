@@ -1,7 +1,7 @@
 title: "Lipp Lab Data Analysis Repository Website"
 type: inverse
 left:
-  - text: "Analysis Without Tidyverse"
+  - text: "Analyses Without Tidyverse"
     menu:
       - text: "Coding-Beaudry"
         href: ./MeganBeaudry_Coding.html
@@ -9,7 +9,7 @@ left:
         href: ./MeganLott_coding.html
       - text: "Coding-Norfolk"
         href: ./WilliamNorfolk_Coding.html
-  - text: "Analysis With Tidyverse "
+  - text: "Analyses With Tidyverse "
     menu:
       - text: "TidyTuesday1-Beaudry"
         href: ./MeganBeaudry_TidyTuesday_index.html
@@ -23,7 +23,7 @@ left:
         href: ./MeganLott_Visualization_index.html
       - text: "Visualization-Norfolk"
         href: ./WilliamNorfolk_Visualization_index.html
-  - text: "Modeling"
+  - text: "Model Analyses"
     menu:
       - text: "Continuous Outcome-Lott"
         href: ./MeganLott_Continuous_Outcome_Analysis.html

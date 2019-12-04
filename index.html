@@ -7,12 +7,11 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
-<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 
 
-<title>Simple Analysis Exercise Website</title>
+<title>Lipp Lab Data Analysis Repository Website</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -70,6 +69,7 @@ code {
 }
 img {
   max-width:100%;
+  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -230,6 +230,18 @@ $(document).ready(function () {
 }
 </style>
 
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
 <!-- code folding -->
 
 
@@ -253,30 +265,74 @@ $(document).ready(function () {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">Data Analysis Exercise Website</a>
+      <a class="navbar-brand" href="index.html">Lipp Lab Data Analysis Repository Website</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Analyses
+    Analyses Without Tidyverse
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="./Continuous_Outcome_Analysis.html">Continuous Outcome Analysis</a>
+      <a href="./MeganBeaudry_Coding.html">Coding-Beaudry</a>
     </li>
-    <li class="dropdown-header">Future Analysis</li>
+    <li>
+      <a href="./MeganLott_coding.html">Coding-Lott</a>
+    </li>
+    <li>
+      <a href="./WilliamNorfolk_Coding.html">Coding-Norfolk</a>
+    </li>
   </ul>
 </li>
-<li>
-  <a href="./Author.html">About the Author</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Analyses With Tidyverse 
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="./MeganBeaudry_TidyTuesday_index.html">TidyTuesday1-Beaudry</a>
+    </li>
+    <li>
+      <a href="./MeganLott_TidyTuesday_index.html">TidyTuesday1-Lott</a>
+    </li>
+    <li>
+      <a href="./WilliamNorfolk_TidyTuesday_index.html">TidyTuesday1-Norfolk</a>
+    </li>
+    <li>
+      <a href="./MeganBeaudry_Visualization_index.html">Visualization-Beaudry</a>
+    </li>
+    <li>
+      <a href="./MeganLott_Visualization_index.html">Visualization-Lott</a>
+    </li>
+    <li>
+      <a href="./WilliamNorfolk_Visualization_index.html">Visualization-Norfolk</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Model Analyses
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="./MeganLott_Continuous_Outcome_Analysis.html">Continuous Outcome-Lott</a>
+    </li>
+    <li>
+      <a href="./WilliamNorfolk_Continuous_Outcome_Analysis.html">Continuous Outcome-Norfolk</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="URL-TO-THIS-REPOSITORY-HERE">
+  <a href="https://williamnorfolk.github.io/LabAnalysesRepository/">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -290,14 +346,12 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Simple Analysis Exercise Website</h1>
+<h1 class="title toc-ignore">Lipp Lab Data Analysis Repository Website</h1>
 
 </div>
 
 
-<p>This is a demo website to illustrate how one can build simple websites using RMarkdown and Github.</p>
-<p>This website contains the solution to the <em>Simple Analysis Exercise</em>.</p>
-<p>Click on the menu links above to see the analysis results and to learn more about me.</p>
+<p>This website contains completed analysis code for future functional reference in other data-based projects in R.</p>
 
 
 
@@ -316,23 +370,6 @@ $(document).ready(function () {
 
 
 </script>
-
-<!-- tabsets -->
-
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
-<!-- code folding -->
-
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
