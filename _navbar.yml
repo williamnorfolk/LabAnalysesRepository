@@ -1,13 +1,34 @@
-title: "Data Analysis Exercise Website"
+title: "Lipp Lab Data Analysis Repository Website"
 type: inverse
 left:
-  - text: "Analyses"
+  - text: "Analysis Without Tidyverse"
     menu:
-      - text: "Continuous Outcome Analysis"
-        href: ./Continuous_Outcome_Analysis.html
-      - text: "Future Analysis"
-  - text: "About the Author"
-    href: ./Author.html
+      - text: "Coding-Beaudry"
+        href: ./MeganBeaudry_Coding.html
+      - text: "Coding-Lott"
+        href: ./MeganLott_coding.html
+      - text: "Coding-Norfolk"
+        href: ./WilliamNorfolk_Coding.html
+  - text: "Analysis With Tidyverse "
+    menu:
+      - text: "TidyTuesday1-Beaudry"
+        href: ./MeganBeaudry_TidyTuesday_index.html
+      - text: "TidyTuesday1-Lott"
+        href: ./MeganLott_TidyTuesday_index.html
+      - text: "TidyTuesday1-Norfolk"
+        href: ./WilliamNorfolk_TidyTuesday_index.html
+      - text: "Visualization-Beaudry"
+        href: ./MeganBeaudry_Visualization_index.html
+      - text: "Visualization-Lott"
+        href: ./MeganLott_Visualization_index.html
+      - text: "Visualization-Norfolk"
+        href: ./WilliamNorfolk_Visualization_index.html
+  - text: "Modeling"
+    menu:
+      - text: "Continuous Outcome-Lott"
+        href: ./MeganLott_Continuous_Outcome_Analysis.html
+      - text: "Continuous Outcome-Norfolk"
+        href: ./WilliamNorfolk_Continuous_Outcome_Analysis.html
 right:
   - icon: fa-github fa-lg
-    href: URL-TO-THIS-REPOSITORY-HERE
+    href: https://williamnorfolk.github.io/LabAnalysesRepository/
