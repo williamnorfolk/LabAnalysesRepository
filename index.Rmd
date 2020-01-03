@@ -1,8 +1,58 @@
 ---
-title: "Lipp Lab Data Analysis Repository Website"
+title: "Lipp Lab Data Analysis Repository"
+authors: "Megan Beaudry, Megan Lott, and William Norfolk"
 output: 
   html_document:
     toc: FALSE
 ---
 
 This website contains completed analysis code for future functional reference in other data-based projects in R. 
+
+## Code Directory 
+
+### Analysis Exercises
+* Coding
+    + Beaudry-R coding exercise using Gapminder Data
+    + Lott-R coding exercise using Gapminder Data
+    + Norfolk-R coding exercise using Gapminder Data
+      - See any above for: Basic Coding/Commands
+    
+* Visualization-Beaudry-Figure Porduction with fivethirtyeight Data. See for:
+    + Geom Line Usage
+    + Stacked Line Plots
+    + Line Plot Graphics/Annotation
+    
+* Visualization-Lott-Figure Porduction with fivethirtyeight Data. See for:
+    + Geom Bar Usage
+    + Stacked Bar Plots
+    + Bar Plot Graphics
+    
+* Visualization-Norfolk-Figure Porduction with fivethirtyeight Data. See for:
+    + Geom Density Usage
+    + Geom Area Usage
+    + Stacked Area Plots
+    + Area Plot Graphics 
+    
+* TidyTuesday-Beaudry-TidyTuesday Analysis Exercise 01/10/2019. See For:
+    + Dplyr Data Tidying
+    + Facet Wrap Usage
+    
+* TidyTuesday-Lott-TidyTuesday Analysis Exercise 01/10/2019. See For:
+    + Dplyr Data Tidying
+    + USA Bubble Map Generation
+    + Geom Polygon-Based Map Creation
+    + State Map Creation with map_data
+    
+* TidyTuesday-Norfolk-TidyTuesday Analysis Exercise 01/10/2019. See For:
+    + Dplyr Data Tidying
+    + Side-By-Side Bar Plots
+    + Geom Dotplot Usage
+    
+### Modeling
+* Continious Outcome-Lott/Norfolk-Continious Modeling Exercise (MADA course). See For:
+    + Data Splitting-train/test
+    + Cross Validation Usage
+    + Custom "lm"-Based Modeling (Linear Model)
+    + Custom "earth"-Based Modeling (Regression Splines)
+    + Custom "knn"-Based Modeling (K-Nearest Neighbors)
+    + Residual Plotting
